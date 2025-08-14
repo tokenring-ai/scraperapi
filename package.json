@@ -1,0 +1,26 @@
+{
+  "name": "@token-ring/scraperapi",
+  "version": "0.1.0",
+  "description": "ScraperAPI integration for Token Ring",
+  "dependencies": {
+    "@token-ring/ai-client": "0.1.0",
+    "@token-ring/chat": "0.1.0",
+    "@token-ring/registry": "0.1.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*.ts"
+  },
+  "types": "./index.ts",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "type": "module"
+}
