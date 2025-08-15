@@ -4,7 +4,6 @@ export type ScraperAPIConfig = {
   apiKey: string;
   countryCode?: string;
   tld?: string;
-  outputFormat?: "json" | "csv";
   render?: boolean;
   deviceType?: "desktop" | "mobile";
 };
@@ -55,13 +54,14 @@ export default class ScraperAPIService extends Service {
     return await fetch(url, init);
   }
 
-  async fetchHtml(url: string, opts: { render?: boolean; countryCode?: string; headers?: Record<string, string> } = {}): Promise<string> {
+  async fetchHtml(url: string, opts: { render?: boolean; countryCode?: string; outputFormat?: string, headers?: Record<string, string> } = {}): Promise<string> {
     if (!url) throw Object.assign(new Error("url is required"), { status: 400 });
     const params = {
       api_key: this.config.apiKey,
       url,
       render: opts.render ?? this.config.render ?? false,
       country_code: opts.countryCode ?? this.config.countryCode,
+      output_format: opts.outputFormat ?? "markdown",
       device_type: this.config.deviceType,
     } as Record<string, any>;
 
@@ -85,7 +85,7 @@ export default class ScraperAPIService extends Service {
       query,
       country_code: opts.countryCode ?? this.config.countryCode,
       tld: opts.tld ?? this.config.tld ?? "com",
-      output_format: opts.outputFormat ?? this.config.outputFormat ?? "json",
+      output_format: opts.outputFormat ??  "json",
       ...(opts.googleParams || {}),
     };
 
@@ -111,7 +111,7 @@ export default class ScraperAPIService extends Service {
       query,
       country_code: opts.countryCode ?? this.config.countryCode,
       tld: opts.tld ?? this.config.tld ?? "com",
-      output_format: opts.outputFormat ?? this.config.outputFormat ?? "json",
+      output_format: opts.outputFormat  ?? "json",
       ...(opts.googleParams || {}),
     };
 
