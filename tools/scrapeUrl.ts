@@ -1,13 +1,15 @@
 import ChatService from "@token-ring/chat/ChatService";
-import type {Registry} from "@token-ring/registry";
-import {z} from "zod";
+import type { Registry } from "@token-ring/registry";
+import { z } from "zod";
 import ScraperAPIService from "../ScraperAPIService.ts";
 
 /**
  * Executes the scrapeUrl tool.
  * All chat output is prefixed with "[scrapeUrl]".
- * Errors are returned in the shape `{ error: string }`.
+ * Errors are thrown as exceptions.
  */
+export const name = "scraperapi/scrapeUrl";
+
 export async function execute(
   {
     url,
@@ -21,31 +23,28 @@ export async function execute(
     headers?: Record<string, string>;
   },
   registry: Registry,
-): Promise<{ html?: string; error?: string }> {
+): Promise<{ html: string }> {
   const chat = registry.requireFirstServiceByType(ChatService);
   const scraper = registry.requireFirstServiceByType(ScraperAPIService);
 
   // Validate required parameters
   if (!url) {
-    const errorMsg = "url is required";
-    const chatMsg = `[scrapeUrl] ${errorMsg}`;
-    chat.errorLine(chatMsg);
-    return {error: errorMsg};
+    throw new Error(`[${name}] url is required`);
   }
 
   try {
-    chat.infoLine(`[scrapeUrl] Fetching ${url} (render=${render ?? false}, country=${countryCode ?? ""})`);
+    chat.infoLine(`[${name}] Fetching ${url} (render=${render ?? false}, country=${countryCode ?? ""})`);
     const html = await scraper.fetchHtml(url, {
       render,
       countryCode,
       headers,
       outputFormat: "markdown",
     });
-    return {html};
+    return { html };
   } catch (e: any) {
     const message = e?.message || String(e);
-    chat.errorLine(`[scrapeUrl] Error: ${message}`);
-    return {error: message};
+    // Propagate error with tool name prefix
+    throw new Error(`[${name}] ${message}`);
   }
 }
 
