@@ -6,14 +6,14 @@ import ScraperAPIService from "../ScraperAPIService.ts";
 export async function execute(
   { query, countryCode, tld, outputFormat = "json", googleParams = {} }: { query?: string; countryCode?: string; tld?: string; outputFormat?: "json" | "csv"; googleParams?: Record<string, string | number> },
   registry: Registry,
-): Promise<{ results?: any; error?: string }> {
+): Promise<{ results: any } | { error: string }> {
   const chat = registry.requireFirstServiceByType(ChatService);
   const scraper = registry.requireFirstServiceByType(ScraperAPIService);
 
   if (!query) {
     const msg = "[googleSerpSearch] query is required";
     chat.errorLine(msg);
-    return { error: msg };
+    return { error: "query is required" };
   }
 
   try {

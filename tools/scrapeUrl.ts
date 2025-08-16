@@ -3,22 +3,44 @@ import { z } from "zod";
 import type { Registry } from "@token-ring/registry";
 import ScraperAPIService from "../ScraperAPIService.ts";
 
+/**
+ * Executes the scrapeUrl tool.
+ * All chat output is prefixed with "[scrapeUrl]".
+ * Errors are returned in the shape `{ error: string }`.
+ */
 export async function execute(
-  { url, render, countryCode, headers }: { url?: string; render?: boolean; countryCode?: string; headers?: Record<string, string> },
+  {
+    url,
+    render,
+    countryCode,
+    headers,
+  }: {
+    url?: string;
+    render?: boolean;
+    countryCode?: string;
+    headers?: Record<string, string>;
+  },
   registry: Registry,
 ): Promise<{ html?: string; error?: string }> {
   const chat = registry.requireFirstServiceByType(ChatService);
   const scraper = registry.requireFirstServiceByType(ScraperAPIService);
 
+  // Validate required parameters
   if (!url) {
-    const msg = "[scrapeUrl] url is required";
-    chat.errorLine(msg);
-    return { error: msg };
+    const errorMsg = "url is required";
+    const chatMsg = `[scrapeUrl] ${errorMsg}`;
+    chat.errorLine(chatMsg);
+    return { error: errorMsg };
   }
 
   try {
     chat.infoLine(`[scrapeUrl] Fetching ${url} (render=${render ?? false}, country=${countryCode ?? ""})`);
-    const html = await scraper.fetchHtml(url, { render, countryCode, headers, outputFormat: "markdown" });
+    const html = await scraper.fetchHtml(url, {
+      render,
+      countryCode,
+      headers,
+      outputFormat: "markdown",
+    });
     return { html };
   } catch (e: any) {
     const message = e?.message || String(e);
