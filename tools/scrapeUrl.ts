@@ -1,6 +1,6 @@
 import ChatService from "@token-ring/chat/ChatService";
-import { z } from "zod";
-import type { Registry } from "@token-ring/registry";
+import type {Registry} from "@token-ring/registry";
+import {z} from "zod";
 import ScraperAPIService from "../ScraperAPIService.ts";
 
 /**
@@ -30,7 +30,7 @@ export async function execute(
     const errorMsg = "url is required";
     const chatMsg = `[scrapeUrl] ${errorMsg}`;
     chat.errorLine(chatMsg);
-    return { error: errorMsg };
+    return {error: errorMsg};
   }
 
   try {
@@ -41,11 +41,11 @@ export async function execute(
       headers,
       outputFormat: "markdown",
     });
-    return { html };
+    return {html};
   } catch (e: any) {
     const message = e?.message || String(e);
     chat.errorLine(`[scrapeUrl] Error: ${message}`);
-    return { error: message };
+    return {error: message};
   }
 }
 

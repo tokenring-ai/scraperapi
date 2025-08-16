@@ -1,10 +1,10 @@
 import ChatService from "@token-ring/chat/ChatService";
-import { z } from "zod";
-import type { Registry } from "@token-ring/registry";
+import type {Registry} from "@token-ring/registry";
+import {z} from "zod";
 import ScraperAPIService from "../ScraperAPIService.ts";
 
 export async function execute(
-  { query, countryCode, tld, outputFormat = "json", googleParams = {} }: {
+  {query, countryCode, tld, outputFormat = "json", googleParams = {}}: {
     query?: string;
     countryCode?: string;
     tld?: string;
@@ -20,18 +20,18 @@ export async function execute(
   if (!query) {
     const errMsg = "query is required";
     chat.errorLine(`[${TOOL_NAME}] ${errMsg}`);
-    return { error: errMsg };
+    return {error: errMsg};
   }
 
   try {
     chat.infoLine(`[${TOOL_NAME}] Searching news: ${query}`);
-    const results = await scraper.googleNews(query, { countryCode, tld, outputFormat, googleParams });
-    return { results };
+    const results = await scraper.googleNews(query, {countryCode, tld, outputFormat, googleParams});
+    return {results};
   } catch (e: any) {
     const message = e?.message || String(e);
     const errMsg = `Error: ${message}`;
     chat.errorLine(`[${TOOL_NAME}] ${errMsg}`);
-    return { error: errMsg };
+    return {error: errMsg};
   }
 }
 
