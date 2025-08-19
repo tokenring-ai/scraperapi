@@ -5,6 +5,7 @@ import ScraperAPIService from "../ScraperAPIService.ts";
 
 export const description = "/scraper [action] [options...] - Quick ScraperAPI actions (url, serp, news)";
 
+// noinspection JSUnusedGlobalSymbols
 export function help(): Array<string> {
   return [
     "/scraper [action] [options...] - Quick ScraperAPI actions",
@@ -40,29 +41,25 @@ export async function execute(remainder: string, registry: Registry): Promise<vo
     return;
   }
 
-  try {
-    if (sub === "url") {
-      const url = rest[0];
-      const render = rest.includes("--render");
-      const countryIndex = rest.indexOf("--country");
-      const countryCode = countryIndex >= 0 ? rest[countryIndex + 1] : undefined;
-      const html = await scraper.fetchHtml(url, {render, countryCode});
-      chat.systemLine(`Fetched HTML (${html.length} chars)`);
-    } else if (sub === "serp") {
-      const query = rest.join(" ");
-      const res = await scraper.googleSerp(query);
-      const summary = typeof res === "string" ? res.slice(0, 500) : JSON.stringify(res).slice(0, 500);
-      chat.systemLine(`SERP result: ${summary}${summary.length === 500 ? "..." : ""}`);
-    } else if (sub === "news") {
-      const query = rest.join(" ");
-      const res = await scraper.googleNews(query);
-      const summary = typeof res === "string" ? res.slice(0, 500) : JSON.stringify(res).slice(0, 500);
-      chat.systemLine(`News result: ${summary}${summary.length === 500 ? "..." : ""}`);
-    } else {
-      const helpLines = help();
-      helpLines.forEach(line => chat.systemLine(line));
-    }
-  } catch (e: any) {
-    chat.errorLine(`Scraper command error: ${e?.message || String(e)}`);
+  if (sub === "url") {
+    const url = rest[0];
+    const render = rest.includes("--render");
+    const countryIndex = rest.indexOf("--country");
+    const countryCode = countryIndex >= 0 ? rest[countryIndex + 1] : undefined;
+    const html = await scraper.fetchHtml(url, {render, countryCode});
+    chat.systemLine(`Fetched HTML (${html.length} chars)`);
+  } else if (sub === "serp") {
+    const query = rest.join(" ");
+    const res = await scraper.googleSerp(query);
+    const summary = typeof res === "string" ? res.slice(0, 500) : JSON.stringify(res).slice(0, 500);
+    chat.systemLine(`SERP result: ${summary}${summary.length === 500 ? "..." : ""}`);
+  } else if (sub === "news") {
+    const query = rest.join(" ");
+    const res = await scraper.googleNews(query);
+    const summary = typeof res === "string" ? res.slice(0, 500) : JSON.stringify(res).slice(0, 500);
+    chat.systemLine(`News result: ${summary}${summary.length === 500 ? "..." : ""}`);
+  } else {
+    const helpLines = help();
+    helpLines.forEach(line => chat.systemLine(line));
   }
 }

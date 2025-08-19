@@ -42,7 +42,7 @@ export default class ScraperAPIService extends Service {
       country_code: opts.countryCode ?? this.config.countryCode,
       output_format: opts.outputFormat ?? "markdown",
       device_type: this.config.deviceType,
-    } as Record<string, any>;
+    };
 
     const qs = this.buildQuery(params);
     const endpoint = `https://api.scraperapi.com/?${qs}`;

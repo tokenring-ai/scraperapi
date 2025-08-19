@@ -15,7 +15,9 @@ ScraperAPI integration for the Token Ring ecosystem. This package provides:
 
 ## Installation & Registration
 
-This package is part of the Token Ring workspace and is auto-registered by tr-writer when added to the Registry. In the writer app (src/tr-writer.ts), the package and tools are added, and the service is conditionally initialized when a ScraperAPI apiKey is provided in the writer config.
+This package is part of the Token Ring workspace and is auto-registered by tr-writer when added to the Registry. In the
+writer app (src/tr-writer.ts), the package and tools are added, and the service is conditionally initialized when a
+ScraperAPI apiKey is provided in the writer config.
 
 ## Configuration
 
@@ -49,15 +51,15 @@ Environment variable: set SCRAPERAPI_KEY in your shell or .env before launching 
 ## Chat Command
 
 - /scraper [action] [options...]
-  - Actions:
-    - url <url> — Fetch HTML content from a URL
-    - serp <query> — Search Google SERP
-    - news <query> — Search Google News
-  - Common options:
-    - --country <code>
-    - --tld <tld> (serp/news)
-    - --output json|csv (serp/news)
-    - --render (url)
+- Actions:
+- url <url> — Fetch HTML content from a URL
+- serp <query> — Search Google SERP
+- news <query> — Search Google News
+- Common options:
+- --country <code>
+- --tld <tld> (serp/news)
+- --output json|csv (serp/news)
+- --render (url)
 
 Examples:
 
@@ -72,18 +74,21 @@ Examples:
 These tools are exported via pkg/scraperapi/tools.ts and can be enabled for agents.
 
 - scrapeUrl
-  - Parameters: { url: string; render?: boolean; countryCode?: string; headers?: Record<string,string> }
-  - Returns: { html } on success
+- Parameters: { url: string; render?: boolean; countryCode?: string; headers?: Record<string,string> }
+- Returns: { html } on success
 - googleSerpSearch
-  - Parameters: { query: string; countryCode?: string; tld?: string; outputFormat?: 'json'|'csv'; googleParams?: Record<string,string|number> }
-  - Returns: { results } (JSON object for json format; string for csv)
+- Parameters: { query: string; countryCode?: string; tld?: string; outputFormat?: 'json'|'csv'; googleParams?: Record<
+  string,string|number> }
+- Returns: { results } (JSON object for json format; string for csv)
 - googleNewsSearch
-  - Parameters: { query: string; countryCode?: string; tld?: string; outputFormat?: 'json'|'csv'; googleParams?: Record<string,string|number> }
-  - Returns: { results } (JSON object for json format; string for csv)
+- Parameters: { query: string; countryCode?: string; tld?: string; outputFormat?: 'json'|'csv'; googleParams?: Record<
+  string,string|number> }
+- Returns: { results } (JSON object for json format; string for csv)
 
 ## Service API
 
 ScraperAPIService config:
+
 - apiKey (required)
 - countryCode? (default geotargeting)
 - tld? (e.g. "com", "co.uk")
@@ -92,9 +97,12 @@ ScraperAPIService config:
 - deviceType? ('desktop' | 'mobile')
 
 Methods:
+
 - fetchHtml(url, opts?: { render?: boolean; countryCode?: string; headers?: Record<string,string> }): Promise<string>
-- googleSerp(query, opts?: { countryCode?: string; tld?: string; outputFormat?: 'json'|'csv'; googleParams?: Record<string,string|number> }): Promise<any>
-- googleNews(query, opts?: { countryCode?: string; tld?: string; outputFormat?: 'json'|'csv'; googleParams?: Record<string,string|number> }): Promise<any>
+- googleSerp(query, opts?: { countryCode?: string; tld?: string; outputFormat?: 'json'|'csv'; googleParams?: Record<
+  string,string|number> }): Promise<any>
+- googleNews(query, opts?: { countryCode?: string; tld?: string; outputFormat?: 'json'|'csv'; googleParams?: Record<
+  string,string|number> }): Promise<any>
 
 Errors are thrown with informative messages and include HTTP status and short hints where available.
 

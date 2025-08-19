@@ -1,6 +1,6 @@
 import ChatService from "@token-ring/chat/ChatService";
-import type { Registry } from "@token-ring/registry";
-import { z } from "zod";
+import type {Registry} from "@token-ring/registry";
+import {z} from "zod";
 import ScraperAPIService from "../ScraperAPIService.ts";
 
 // Export tool name in required format
@@ -12,13 +12,11 @@ export async function execute(
     countryCode,
     tld,
     outputFormat = "json",
-    googleParams = {},
   }: {
     query?: string;
     countryCode?: string;
     tld?: string;
     outputFormat?: "json" | "csv";
-    googleParams?: Record<string, string | number>;
   },
   registry: Registry,
 ): Promise<{ results: any }> {
@@ -30,28 +28,20 @@ export async function execute(
     throw new Error(`[${name}] query is required`);
   }
 
-  try {
-    chat.infoLine(`[${name}] Searching: ${query}`);
-    const results = await scraper.googleSerp(query, {
-      countryCode,
-      tld,
-      outputFormat,
-      googleParams,
-    });
-    return { results };
-  } catch (e: any) {
-    const message = e?.message || String(e);
-    // Throw error after optionally logging info line (info only, not error line)
-    throw new Error(`[${name}] ${message}`);
-  }
+  chat.infoLine(`[${name}] Searching: ${query}`);
+  const results = await scraper.googleSerp(query, {
+    countryCode,
+    tld,
+    outputFormat
+  });
+  return {results};
 }
 
 export const description = "Google SERP structured search via ScraperAPI. Returns structured JSON (or CSV string).";
 
-export const parameters = z.object({
+export const inputSchema = z.object({
   query: z.string().min(1).describe("Search query"),
   countryCode: z.string().optional().describe("Two-letter country code"),
   tld: z.string().optional().describe("Google domain TLD, e.g. com, co.uk"),
   outputFormat: z.enum(["json", "csv"]).optional().describe("Output format: json (default) or csv"),
-  googleParams: z.record(z.union([z.string(), z.number()])).optional().describe("Additional Google parameters (UULE, NUM, HL, GL, TBS, IE, OE, START)"),
 });
