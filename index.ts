@@ -4,4 +4,4 @@ export const name = packageJSON.name;
 export const version = packageJSON.version;
 export const description = packageJSON.description;
 
-export {default as ScraperAPIWebSearchResource} from "./ScraperAPIWebSearchResource.ts";
+export {default as ScraperAPIWebSearchResource} from "./ScraperAPIWebSearchProvider.ts";

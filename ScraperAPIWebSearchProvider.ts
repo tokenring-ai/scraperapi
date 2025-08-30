@@ -1,7 +1,7 @@
-import WebSearchResource, {type WebSearchOptions, type WebSearchResult, type WebPageOptions, type WebPageResult} from "@token-ring/websearch/WebSearchResource";
+import WebSearchProvider, {type WebSearchProviderOptions, type WebSearchResult, type WebPageOptions, type WebPageResult} from "@token-ring/websearch/WebSearchProvider";
 import {doFetchWithRetry} from "@token-ring/utility/doFetchWithRetry";
 
-export type ScraperAPIConfig = {
+export type ScraperAPIWebSearchProviderOptions = {
   apiKey: string;
   countryCode?: string;
   tld?: string;
@@ -115,16 +115,16 @@ export interface FetchHtmlOptions {
   headers?: Record<string, string>;
 }
 
-export default class ScraperAPIWebSearchResource extends WebSearchResource {
-  private config: ScraperAPIConfig;
+export default class ScraperAPIWebSearchProvider extends WebSearchProvider {
+  private config: ScraperAPIWebSearchProviderOptions;
 
-  constructor(config: ScraperAPIConfig) {
+  constructor(config: ScraperAPIWebSearchProviderOptions) {
     super();
     if (!config?.apiKey) throw new Error("ScraperAPIWebSearchResource requires apiKey");
     this.config = config;
   }
 
-  async searchWeb(query: string, options?: WebSearchOptions): Promise<WebSearchResult> {
+  async searchWeb(query: string, options?: WebSearchProviderOptions): Promise<WebSearchResult> {
     const results = await this.googleSerp(query, {
       countryCode: options?.countryCode,
       tld: "com",
@@ -133,7 +133,7 @@ export default class ScraperAPIWebSearchResource extends WebSearchResource {
     return {results};
   }
 
-  async searchNews(query: string, options?: WebSearchOptions): Promise<WebSearchResult> {
+  async searchNews(query: string, options?: WebSearchProviderOptions): Promise<WebSearchResult> {
     const results = await this.googleNews(query, {
       countryCode: options?.countryCode,
       tld: "com",
