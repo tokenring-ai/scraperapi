@@ -56,8 +56,8 @@ Implementation in TokenRing Writer app
 - Package registration (similar to other packages like ghost-io/template):
 - Import the package and service in src/tr-writer.ts:
   ```ts
-  import * as ScraperAPIPackage from "@token-ring/scraperapi";
-  import { ScraperAPIService } from "@token-ring/scraperapi";
+  import * as ScraperAPIPackage from "@tokenring-ai/scraperapi";
+  import { ScraperAPIService } from "@tokenring-ai/scraperapi";
   ```
 - Add the package to the registry alongside others:
   ```ts

@@ -1,4 +1,4 @@
-# @token-ring/scraperapi
+# @tokenring-ai/scraperapi
 
 ScraperAPI integration for the Token Ring ecosystem. This package provides:
 

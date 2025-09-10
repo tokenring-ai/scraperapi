@@ -1,5 +1,10 @@
-import WebSearchProvider, {type WebSearchProviderOptions, type WebSearchResult, type WebPageOptions, type WebPageResult} from "@token-ring/websearch/WebSearchProvider";
-import {doFetchWithRetry} from "@token-ring/utility/doFetchWithRetry";
+import {doFetchWithRetry} from "@tokenring-ai/utility/doFetchWithRetry";
+import WebSearchProvider, {
+  type WebPageOptions,
+  type WebPageResult,
+  type WebSearchProviderOptions,
+  type WebSearchResult
+} from "@tokenring-ai/websearch/WebSearchProvider";
 
 export type ScraperAPIWebSearchProviderOptions = {
   apiKey: string;
