@@ -125,7 +125,7 @@ export default class ScraperAPIWebSearchProvider extends WebSearchProvider {
 
   constructor(config: ScraperAPIWebSearchProviderOptions) {
     super();
-    if (!config?.apiKey) throw new Error("ScraperAPIWebSearchResource requires apiKey");
+    if (!config?.apiKey) throw new Error("ScraperAPIWebSearchProvider requires apiKey");
     this.config = config;
   }
 
