@@ -5,14 +5,17 @@ import WebSearchProvider, {
   type WebSearchProviderOptions,
   type WebSearchResult
 } from "@tokenring-ai/websearch/WebSearchProvider";
+import {z} from "zod";
 
-export type ScraperAPIWebSearchProviderOptions = {
-  apiKey: string;
-  countryCode?: string;
-  tld?: string;
-  render?: boolean;
-  deviceType?: "desktop" | "mobile";
-};
+export const ScraperAPIWebSearchProviderOptionsSchema = z.object({
+  apiKey: z.string(),
+  countryCode: z.string().optional(),
+  tld: z.string().optional(),
+  render: z.boolean().optional(),
+  deviceType: z.enum(["desktop", "mobile"]).optional(),
+});
+
+export type ScraperAPIWebSearchProviderOptions = z.infer<typeof ScraperAPIWebSearchProviderOptionsSchema>;
 
 export interface GoogleSerpOptions {
   countryCode?: string;
