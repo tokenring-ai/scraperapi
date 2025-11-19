@@ -3,14 +3,14 @@
  "version": "0.1.0",
  "description": "ScraperAPI integration for Token Ring",
  "dependencies": {
-  "@tokenring-ai/ai-client": "0.1.0",
+  "@tokenring-ai/chat": "0.1.0",
   "@tokenring-ai/agent": "0.1.0",
   "@tokenring-ai/websearch": "0.1.0",
   "@tokenring-ai/utility": "0.1.0"
  },
  "devDependencies": {
-  "vitest": "^3.2.4",
-  "@vitest/coverage-v8": "^3.2.4"
+  "vitest": "^4.0.10",
+  "@vitest/coverage-v8": "^4.0.10"
  },
  "exports": {
   ".": "./index.ts",
