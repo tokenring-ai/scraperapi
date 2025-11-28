@@ -7,7 +7,7 @@ description: >-
 
 # Google News API
 
-This endpoint will retrieve news data from an Google news result page and transform it into usable JSON.
+This endpoint will retrieve news data from a Google News result page and transform it into usable JSON.
 
 ```javascript
 import fetch from 'node-fetch';

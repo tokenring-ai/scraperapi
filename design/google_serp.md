@@ -7,7 +7,7 @@ description: >-
 
 # Google SERP API
 
-This endpoint will retrieve product data from an Google search result page and transform it into usable JSON.
+This endpoint will retrieve product data from a Google search result page and transform it into usable JSON.
 
 {% code overflow="wrap" %}
 
