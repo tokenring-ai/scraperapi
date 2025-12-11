@@ -1,25 +1,25 @@
 {
- "name": "@tokenring-ai/scraperapi",
- "version": "0.2.0",
- "description": "ScraperAPI integration for Token Ring",
- "dependencies": {
-  "@tokenring-ai/app": "0.2.0",
-  "zod": "^4.1.13",
-  "@tokenring-ai/chat": "0.2.0",
-  "@tokenring-ai/agent": "0.2.0",
-  "@tokenring-ai/websearch": "0.2.0",
-  "@tokenring-ai/utility": "0.2.0"
- },
- "exports": {
-  ".": "./index.ts",
-  "./*": "./*.ts"
- },
- "types": "./index.ts",
- "license": "MIT",
- "scripts": {
-  "test": "vitest run",
-  "test:watch": "vitest",
-  "test:coverage": "vitest run --coverage"
- },
- "type": "module"
+  "name": "@tokenring-ai/scraperapi",
+  "version": "0.2.0",
+  "description": "ScraperAPI integration for Token Ring",
+  "dependencies": {
+    "@tokenring-ai/app": "0.2.0",
+    "zod": "^4.1.13",
+    "@tokenring-ai/chat": "0.2.0",
+    "@tokenring-ai/agent": "0.2.0",
+    "@tokenring-ai/websearch": "0.2.0",
+    "@tokenring-ai/utility": "0.2.0"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*.ts"
+  },
+  "types": "./index.ts",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "type": "module"
 }
