@@ -19,7 +19,12 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "build": "tsc --noEmit"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "vitest": "catalog:",
+    "typescript": "catalog:"
+  }
 }
