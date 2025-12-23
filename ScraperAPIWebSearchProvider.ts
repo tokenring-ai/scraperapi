@@ -121,12 +121,6 @@ export interface GoogleNewsResponse {
   };
 }
 
-export interface FetchHtmlOptions {
-  render?: boolean;
-  countryCode?: string;
-  headers?: Record<string, string>;
-}
-
 export default class ScraperAPIWebSearchProvider extends WebSearchProvider {
   private config: ScraperAPIWebSearchProviderOptions;
 
