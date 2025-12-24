@@ -1,6 +1,6 @@
 # @tokenring-ai/scraperapi
 
-ScraperAPI integration for Token Ring - A web scraping provider that extends the Token Ring AI ecosystem with robust Google Search and News capabilities.
+ScraperAPI integration for Token Ring AI - A web scraping provider that extends the Token Ring AI ecosystem with robust Google Search and News capabilities.
 
 ## Overview
 
@@ -15,13 +15,33 @@ This package extends the `WebSearchProvider` from `@tokenring-ai/websearch`, off
 - **Geotargeting**: Support for country-specific searches and custom TLDs
 - **Plugin Integration**: Automatic registration with Token Ring applications
 
+## Features
+
+### Core Capabilities
+
+- **Web Scraping**: Fetch HTML content from any URL with optional rendering
+- **Google Search**: Perform structured searches with comprehensive parameter support
+- **Google News**: Retrieve news articles with metadata and thumbnails
+- **Geotargeting**: Country-specific searches with support for 20+ Google TLDs
+- **Pagination**: Support for result pagination and continuation
+- **Structured Data**: JSON responses with consistent response formats
+
+### Configuration Options
+
+- API key authentication
+- Country code and TLD customization
+- JavaScript rendering toggle
+- Device type selection (desktop/mobile)
+- Result format selection (JSON/CSV)
+- Time-based filtering (hour/day/week/month/year)
+
 ## Installation
 
 This package is part of the Token Ring AI monorepo. To use it:
 
 ```bash
 # Install dependencies
-npm install
+bun install
 ```
 
 ## Configuration
@@ -45,7 +65,8 @@ export default {
         countryCode: "us",                  // Optional (e.g., 'us', 'gb', 'ca')
         tld: "com",                         // Optional (e.g., 'com', 'co.uk')
         render: false,                      // Optional (enable JS rendering)
-        deviceType: "desktop"               // Optional ('desktop' or 'mobile')
+        deviceType: "desktop",               // Optional ('desktop' or 'mobile')
+        outputFormat: "json"                 // Optional ('json' or 'csv')
       }
     }
   }
@@ -62,7 +83,8 @@ const ScraperAPIWebSearchProviderOptionsSchema = z.object({
   countryCode: z.string().optional(),    // Optional
   tld: z.string().optional(),            // Optional  
   render: z.boolean().optional(),        // Optional
-  deviceType: z.enum(["desktop", "mobile"]).optional() // Optional
+  deviceType: z.enum(["desktop", "mobile"]).optional(), // Optional
+  outputFormat: z.enum(["json", "csv"]).optional() // Optional
 });
 ```
 
@@ -105,14 +127,36 @@ const pageContent = await provider.fetchPage('https://example.com', {
 console.log(pageContent.markdown);
 ```
 
-### Integration with Token Ring
+### Google Search Parameters
 
-The package automatically integrates with Token Ring applications through the plugin system:
+The package supports comprehensive Google search parameters:
 
-1. **Automatic Registration**: The plugin automatically registers the ScraperAPI provider when configuration is detected
-2. **Service Integration**: Integrates with `@tokenring-ai/websearch` service
-3. **Chat Commands**: Available through chat interface when enabled
-4. **Agent Tools**: Available as tools for AI agents
+```typescript
+// Search with time filter
+const recentResults = await provider.searchWeb('technology news', {
+  countryCode: 'us',
+  gl: 'us'
+});
+
+// Search with result limit and pagination
+const limitedResults = await provider.searchWeb('AI research', {
+  countryCode: 'us',
+  num: 20,
+  start: 10
+});
+
+// News search with time range
+const weeklyNews = await provider.searchNews('climate change', {
+  countryCode: 'us',
+  tbs: 'w'  // Past week
+});
+
+// Fetch page with JavaScript rendering
+const renderedContent = await provider.fetchPage('https://example.com', {
+  render: true,
+  countryCode: 'gb'
+});
+```
 
 ## API Reference
 
@@ -132,6 +176,7 @@ new ScraperAPIWebSearchProvider(config: ScraperAPIWebSearchProviderOptions)
 - `tld` (string, optional): Google TLD (e.g., 'com', 'co.uk')
 - `render` (boolean, optional): Enable JavaScript rendering
 - `deviceType` (string, optional): Device type ('desktop' or 'mobile')
+- `outputFormat` (string, optional): Output format ('json' or 'csv')
 
 #### Methods
 
@@ -264,58 +309,6 @@ interface GoogleNewsResponse {
 }
 ```
 
-## Google Search Parameters
-
-The package supports comprehensive Google search parameters through the SERP and News endpoints:
-
-### Endpoint URLs
-
-- **SERP Search**: `https://api.scraperapi.com/structured/google/search`
-- **News Search**: `https://api.scraperapi.com/structured/google/news`
-- **HTML Fetch**: `https://api.scraperapi.com/`
-
-### Supported Parameters
-
-**Common Parameters:**
-- `num`: Number of results (1-100)
-- `tbs`: Time-based search (`h`=hour, `d`=day, `w`=week, `m`=month, `y`=year)
-- `hl`: Host language (e.g., 'en', 'de')
-- `gl`: Geographic location boost (e.g., 'us', 'gb')
-- `start`: Starting offset for pagination
-- `uule`: Precise location encoding
-- `tbs`: Time range filtering
-- `ie`: Input encoding
-- `oe`: Output encoding
-
-### Usage Examples
-
-```typescript
-// Search with time filter
-const recentResults = await provider.searchWeb('technology news', {
-  countryCode: 'us',
-  gl: 'us'
-});
-
-// Search with result limit and pagination
-const limitedResults = await provider.searchWeb('AI research', {
-  countryCode: 'us',
-  num: 20,
-  start: 10
-});
-
-// News search with time range
-const weeklyNews = await provider.searchNews('climate change', {
-  countryCode: 'us',
-  tbs: 'w'  // Past week
-});
-
-// Fetch page with JavaScript rendering
-const renderedContent = await provider.fetchPage('https://example.com', {
-  render: true,
-  countryCode: 'gb'
-});
-```
-
 ## Error Handling
 
 The package provides standardized error handling with detailed error information:
@@ -339,7 +332,7 @@ try {
 - **429**: Rate limit exceeded
 - **5xx**: Server errors from ScraperAPI
 
-## Plugin System
+## Plugin Integration
 
 The package includes automatic plugin integration:
 
@@ -348,6 +341,7 @@ The package includes automatic plugin integration:
 export default {
   name: "@tokenring-ai/scraperapi",
   version: "0.2.0",
+  description: "ScraperAPI integration for Token Ring",
   install(app: TokenRingApp) {
     const websearchConfig = app.getConfigSlice("websearch", WebSearchConfigSchema);
     
@@ -384,6 +378,7 @@ export default {
 ### Development Dependencies
 
 - `vitest`: Testing framework
+- `typescript`: Type checking
 - `@vitest/coverage-v8`: Coverage reporting
 
 ## Testing
@@ -392,13 +387,13 @@ Run the test suite:
 
 ```bash
 # Run all tests
-npm test
+bun run test
 
 # Run tests in watch mode
-npm run test:watch
+bun run test:watch
 
 # Run tests with coverage
-npm run test:coverage
+bun run test:coverage
 ```
 
 ## Package Structure
@@ -417,15 +412,6 @@ pkg/scraperapi/
     ├── google_news.md                 # News API documentation
     └── endpoint_docs.md               # General endpoint usage
 ```
-
-## Error Recovery and Retry Logic
-
-The package includes built-in retry logic through `doFetchWithRetry` from `@tokenring-ai/utility`:
-
-- **Automatic retries** on transient network failures
-- **Exponential backoff** for rate limiting (429 errors)
-- **Circuit breaker pattern** for persistent failures
-- **Graceful degradation** with helpful error messages
 
 ## Rate Limiting and Usage
 
@@ -493,8 +479,8 @@ console.log('Response status:', response);
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Add tests for new functionality (`npm test`)
-4. Ensure all tests pass (`npm run test:coverage`)
+3. Add tests for new functionality (`bun test`)
+4. Ensure all tests pass (`bun run test:coverage`)
 5. Submit a pull request
 
 ### Development Guidelines
@@ -530,7 +516,7 @@ For issues related to:
 3. Examine test files for usage examples
 4. Open an issue with detailed error information
 
----
+--- 
 
 **Version**: 0.2.0  
 **License**: MIT  
