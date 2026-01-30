@@ -122,12 +122,8 @@ export interface GoogleNewsResponse {
 }
 
 export default class ScraperAPIWebSearchProvider extends WebSearchProvider {
-  private config: ScraperAPIWebSearchProviderOptions;
-
-  constructor(config: ScraperAPIWebSearchProviderOptions) {
+  constructor(readonly config: ScraperAPIWebSearchProviderOptions) {
     super();
-    if (!config?.apiKey) throw new Error("ScraperAPIWebSearchProvider requires apiKey");
-    this.config = config;
   }
 
 
