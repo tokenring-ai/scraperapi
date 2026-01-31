@@ -354,11 +354,11 @@ export default {
   description: packageJSON.description,
   install(app, config) {
     if (config.websearch) {
-      app.waitForService(WebSearchService, cdnService => {
+      app.waitForService(WebSearchService, websearchService => {
         for (const name in config.websearch!.providers) {
           const provider = config.websearch!.providers[name];
           if (provider.type === "scraperapi") {
-            cdnService.registerProvider(name, new ScraperAPIWebSearchProvider(
+            websearchService.registerProvider(name, new ScraperAPIWebSearchProvider(
               ScraperAPIWebSearchProviderOptionsSchema.parse(provider)
             ));
           }
