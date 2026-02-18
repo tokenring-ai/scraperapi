@@ -229,7 +229,9 @@ Fetches HTML content from a URL using ScraperAPI.
 
 ## Response Types
 
-### Google SERP Response
+The package returns structured data that conforms to the Token Ring websearch API. The underlying ScraperAPI responses are mapped to these standardized types:
+
+### Google SERP Response Structure
 
 ```typescript
 interface GoogleSerpResponse {
@@ -279,7 +281,7 @@ interface GoogleSerpResponse {
 }
 ```
 
-### Google News Response
+### Google News Response Structure
 
 ```typescript
 interface GoogleNewsResponse {
@@ -334,15 +336,15 @@ try {
 
 ## Plugin Integration
 
-The package includes automatic plugin integration:
+The package includes automatic plugin integration through the `@tokenring-ai/app` plugin system:
 
 ```typescript
 // plugin.ts
-import { TokenRingPlugin } from '@tokenring-ai/app';
-import { WebSearchConfigSchema, WebSearchService } from '@tokenring-ai/websearch';
-import { z } from 'zod';
-import packageJSON from './package.json' with { type: 'json' };
-import ScraperAPIWebSearchProvider, { ScraperAPIWebSearchProviderOptionsSchema } from './ScraperAPIWebSearchProvider.ts';
+import { TokenRingPlugin } from "@tokenring-ai/app";
+import { WebSearchConfigSchema, WebSearchService } from "@tokenring-ai/websearch";
+import { z } from "zod";
+import packageJSON from "./package.json" with { type: "json" };
+import ScraperAPIWebSearchProvider, { ScraperAPIWebSearchProviderOptionsSchema } from "./ScraperAPIWebSearchProvider.ts";
 
 const packageConfigSchema = z.object({
   websearch: WebSearchConfigSchema.optional()
@@ -354,20 +356,18 @@ export default {
   description: packageJSON.description,
   install(app, config) {
     if (config.websearch) {
-      app.waitForService(WebSearchService, websearchService => {
+      app.waitForService(WebSearchService, cdnService => {
         for (const name in config.websearch!.providers) {
           const provider = config.websearch!.providers[name];
           if (provider.type === "scraperapi") {
-            websearchService.registerProvider(name, new ScraperAPIWebSearchProvider(
-              ScraperAPIWebSearchProviderOptionsSchema.parse(provider)
-            ));
+            cdnService.registerProvider(name, new ScraperAPIWebSearchProvider(ScraperAPIWebSearchProviderOptionsSchema.parse(provider)));
           }
         }
       });
     }
   },
   config: packageConfigSchema
-} satisfies TokenRingPlugin<typeof packageConfigSchema>;
+} satisfies TokenRingPlugin;
 ```
 
 ## Testing
@@ -393,13 +393,14 @@ pkg/scraperapi/
 ├── ScraperAPIWebSearchProvider.ts     # Main provider implementation
 ├── plugin.ts                          # Token Ring plugin integration
 ├── package.json                       # Package metadata and dependencies
-└── README.md                          # This documentation
+├── README.md                          # This documentation
+└── vitest.config.ts                   # Vitest configuration
 ```
 
 ## Rate Limiting and Usage
 
 - **ScraperAPI quotas**: Respects your plan's rate limits
-- **429 handling**: Automatic retry with exponential backoff
+- **429 handling**: Automatic retry with exponential backoff via `doFetchWithRetry`
 - **Usage tracking**: Monitor your usage through ScraperAPI dashboard
 - **Best practices**: Implement caching for repeated queries
 
