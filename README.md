@@ -78,7 +78,7 @@ The package uses Zod schema validation for configuration:
 ```typescript
 import { z } from 'zod';
 
-const ScraperAPIWebSearchProviderOptionsSchema = z.object({
+export const ScraperAPIWebSearchProviderOptionsSchema = z.object({
   apiKey: z.string(),                                    // Required
   countryCode: z.string().optional(),                    // Optional
   tld: z.string().optional(),                            // Optional
@@ -86,7 +86,7 @@ const ScraperAPIWebSearchProviderOptionsSchema = z.object({
   deviceType: z.enum(["desktop", "mobile"]).optional(),  // Optional
 });
 
-type ScraperAPIWebSearchProviderOptions = z.infer<typeof ScraperAPIWebSearchProviderOptionsSchema>;
+export type ScraperAPIWebSearchProviderOptions = z.infer<typeof ScraperAPIWebSearchProviderOptionsSchema>;
 ```
 
 ## Usage
@@ -130,7 +130,7 @@ console.log(pageContent.markdown);
 
 ### Google Search Parameters
 
-The package supports comprehensive Google search parameters:
+The package supports comprehensive Google search parameters through the options:
 
 ```typescript
 // Search with time filter
@@ -178,7 +178,7 @@ new ScraperAPIWebSearchProvider(config: ScraperAPIWebSearchProviderOptions)
 - `render` (boolean, optional): Enable JavaScript rendering
 - `deviceType` (string, optional): Device type ('desktop' or 'mobile')
 
-#### Methods
+#### Public Methods
 
 ##### searchWeb
 
@@ -191,6 +191,12 @@ Performs a Google SERP search and returns structured results.
 **Parameters:**
 - `query` (string): Search query
 - `options` (WebSearchProviderOptions, optional): Search options
+  - `countryCode` (string, optional): Country code for geotargeting
+  - `gl` (string, optional): Country boost parameter
+  - `hl` (string, optional): Host language
+  - `num` (number, optional): Number of results
+  - `tbs` (string, optional): Time-based search filter
+  - `start` (number, optional): Pagination offset
 
 **Returns:** `WebSearchResult` containing:
 - `organic`: Array of organic search results
@@ -218,20 +224,63 @@ Performs a Google News search and returns structured results.
 async fetchPage(url: string, options?: WebPageOptions): Promise<WebPageResult>
 ```
 
-Fetches HTML content from a URL using ScraperAPI.
+Fetches HTML content from a URL using ScraperAPI and returns it in markdown format.
 
 **Parameters:**
 - `url` (string): URL to fetch
 - `options` (WebPageOptions, optional): Fetch options
+  - `render` (boolean, optional): Enable JavaScript rendering
+  - `countryCode` (string, optional): Country code for geotargeting
 
 **Returns:** `WebPageResult` containing:
 - `markdown`: Page content in markdown format
 
-## Response Types
+#### Private Methods
+
+##### googleSerp
+
+```typescript
+private async googleSerp(query: string, opts?: GoogleSerpOptions): Promise<GoogleSerpResponse>
+```
+
+Internal method to perform Google SERP searches via ScraperAPI.
+
+**Parameters:**
+- `query` (string): Search query
+- `opts` (GoogleSerpOptions, optional): Advanced options
+  - `countryCode` (string, optional): Country code
+  - `tld` (string, optional): Google TLD
+  - `outputFormat` ('json' | 'csv', optional): Output format
+  - `uule` (string, optional): UULE parameter for location targeting
+  - `num` (number, optional): Number of results
+  - `hl` (string, optional): Host language
+  - `gl` (string, optional): Country boost
+  - `tbs` (string, optional): Time-based filter
+  - `ie` (string, optional): Input encoding
+  - `oe` (string, optional): Output encoding
+  - `start` (number, optional): Pagination offset
+
+**Returns:** `GoogleSerpResponse` with structured SERP data
+
+##### googleNews
+
+```typescript
+private async googleNews(query: string, opts?: GoogleNewsOptions): Promise<GoogleNewsResponse>
+```
+
+Internal method to perform Google News searches via ScraperAPI.
+
+**Parameters:**
+- `query` (string): Search query
+- `opts` (GoogleNewsOptions, optional): Advanced options (same as GoogleSerpOptions)
+
+**Returns:** `GoogleNewsResponse` with structured news data
+
+### Response Types
 
 The package returns structured data that conforms to the Token Ring websearch API. The underlying ScraperAPI responses are mapped to these standardized types:
 
-### Google SERP Response Structure
+#### Google SERP Response Structure
 
 ```typescript
 interface GoogleSerpResponse {
@@ -281,7 +330,7 @@ interface GoogleSerpResponse {
 }
 ```
 
-### Google News Response Structure
+#### Google News Response Structure
 
 ```typescript
 interface GoogleNewsResponse {
@@ -334,6 +383,11 @@ try {
 - **429**: Rate limit exceeded
 - **5xx**: Server errors from ScraperAPI
 
+Errors include:
+- `message`: Human-readable error description
+- `status`: HTTP status code
+- `hint`: First 200 characters of error response body
+
 ## Plugin Integration
 
 The package includes automatic plugin integration through the `@tokenring-ai/app` plugin system:
@@ -367,7 +421,7 @@ export default {
     }
   },
   config: packageConfigSchema
-} satisfies TokenRingPlugin;
+} satisfies TokenRingPlugin<typeof packageConfigSchema>;
 ```
 
 ## Testing
@@ -394,7 +448,12 @@ pkg/scraperapi/
 ├── plugin.ts                          # Token Ring plugin integration
 ├── package.json                       # Package metadata and dependencies
 ├── README.md                          # This documentation
-└── vitest.config.ts                   # Vitest configuration
+├── vitest.config.ts                   # Vitest configuration
+└── design/                            # Design documentation
+    ├── implementation.md              # Implementation design
+    ├── endpoint_docs.md               # ScraperAPI endpoint documentation
+    ├── google_serp.md                 # Google SERP API documentation
+    └── google_news.md                 # Google News API documentation
 ```
 
 ## Rate Limiting and Usage
@@ -403,6 +462,24 @@ pkg/scraperapi/
 - **429 handling**: Automatic retry with exponential backoff via `doFetchWithRetry`
 - **Usage tracking**: Monitor your usage through ScraperAPI dashboard
 - **Best practices**: Implement caching for repeated queries
+
+## Google Search Parameters Reference
+
+The package supports the following Google search parameters through ScraperAPI:
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `country_code` | Two-letter ISO country code for geotargeting | `us`, `gb`, `ca` |
+| `tld` | Google domain TLD | `com`, `co.uk`, `ca` |
+| `output_format` | Response format | `json`, `csv` |
+| `uule` | Location targeting (UULE parameter) | `w+CAIQICINUGFyaXMsIEZyYW5jZQ` |
+| `num` | Number of results | `10`, `20` |
+| `hl` | Host language | `en`, `de` |
+| `gl` | Country boost | `us`, `de` |
+| `tbs` | Time-based filter | `d` (day), `w` (week), `m` (month), `y` (year) |
+| `ie` | Input encoding | `UTF8` |
+| `oe` | Output encoding | `UTF8` |
+| `start` | Pagination offset | `0`, `10`, `20` |
 
 ## Ethical Considerations
 
