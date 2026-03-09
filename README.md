@@ -21,7 +21,6 @@ The `@tokenring-ai/scraperapi` package provides a ScraperAPI-based web search pr
 - **Google Search**: Perform structured SERP searches with comprehensive parameter support
 - **Google News**: Retrieve news articles with metadata and thumbnails
 - **Geotargeting**: Country-specific searches with support for multiple Google TLDs
-- **Pagination**: Support for result pagination and continuation
 - **Structured Data**: JSON responses with consistent response formats
 
 ### Configuration Options
