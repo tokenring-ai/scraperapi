@@ -220,14 +220,14 @@ Performs a Google News search and returns structured results.
 ##### fetchPage
 
 ```typescript
-async fetchPage(url: string, options?: WebPageOptions): Promise<WebPageResult>
+async fetchPage(url: string, opts: WebPageOptions): Promise<WebPageResult>
 ```
 
 Fetches HTML content from a URL using ScraperAPI and returns it in markdown format.
 
 **Parameters:**
 - `url` (string): URL to fetch
-- `options` (WebPageOptions, optional): Fetch options
+- `opts` (WebPageOptions): Fetch options
   - `render` (boolean, optional): Enable JavaScript rendering
   - `countryCode` (string, optional): Country code for geotargeting
 

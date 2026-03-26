@@ -137,17 +137,17 @@ export default class ScraperAPIWebSearchProvider extends WebSearchProvider {
     return {
       organic: results.organic_results,
       knowledgeGraph: results.knowledge_graph
-        ? (({position, title, image, description} : ScraperAPIKnowledgeGraph) => {
+        ? (({position, title, image, description}: ScraperAPIKnowledgeGraph) => {
             return {
               position,
               title,
               imageUrl: image,
-              description
-            } as KnowledgeGraph
+              description,
+            } as KnowledgeGraph;
           })(results.knowledge_graph)
         : undefined,
       relatedSearches: results.related_questions?.map(({question, position}) => ({query: question, position})),
-    }
+    };
   }
 
   async searchNews(query: string, options?: WebSearchProviderOptions): Promise<NewsSearchResult> {
@@ -168,7 +168,7 @@ export default class ScraperAPIWebSearchProvider extends WebSearchProvider {
       url,
       render: opts.render ?? this.config.render ?? false,
       country_code: opts.countryCode ?? this.config.countryCode,
-      device_type: this.config.deviceType,
+      device_type: opts.deviceType ?? this.config.deviceType,
       output_format: "markdown",
     };
 
@@ -179,7 +179,7 @@ export default class ScraperAPIWebSearchProvider extends WebSearchProvider {
       const text = await res.text().catch(() => "");
       throw Object.assign(new Error(`ScraperAPI HTML fetch failed (${res.status})`), {
         status: res.status,
-        hint: text?.slice(0, 200),
+        hint: text.slice(0, 200),
       });
     }
     return {
