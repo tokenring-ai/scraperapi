@@ -7,17 +7,7 @@ import WebSearchProvider, {
   type WebSearchProviderOptions,
   type WebSearchResult
 } from "@tokenring-ai/websearch/WebSearchProvider";
-import {z} from "zod";
-
-export const ScraperAPIWebSearchProviderOptionsSchema = z.object({
-  apiKey: z.string(),
-  countryCode: z.string().optional(),
-  tld: z.string().optional(),
-  render: z.boolean().optional(),
-  deviceType: z.enum(["desktop", "mobile"]).optional(),
-});
-
-export type ScraperAPIWebSearchProviderOptions = z.infer<typeof ScraperAPIWebSearchProviderOptionsSchema>;
+import type {ScraperAPIWebSearchProviderOptions} from "./schema.ts";
 
 export interface GoogleSerpOptions {
   countryCode?: string;

@@ -1,7 +1,7 @@
 {
   "name": "@tokenring-ai/scraperapi",
   "version": "0.2.0",
-  "description": "ScraperAPI integration for Token Ring",
+  "description": "Advanced web scraping and SERP retrieval with proxy support.",
   "dependencies": {
     "@tokenring-ai/app": "0.2.0",
     "zod": "^4.3.6",
