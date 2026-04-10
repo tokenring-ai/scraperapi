@@ -7,4 +7,6 @@ export const ScraperAPIWebSearchProviderOptionsSchema = z.object({
   render: z.boolean().optional(),
   deviceType: z.enum(["desktop", "mobile"]).optional(),
 });
-export type ScraperAPIWebSearchProviderOptions = z.infer<typeof ScraperAPIWebSearchProviderOptionsSchema>;
+export type ScraperAPIWebSearchProviderOptions = z.infer<
+  typeof ScraperAPIWebSearchProviderOptionsSchema
+>;
