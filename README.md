@@ -171,6 +171,7 @@ new ScraperAPIWebSearchProvider(config: ScraperAPIWebSearchProviderOptions)
 ```
 
 **Parameters:**
+
 - `apiKey` (string, required): Your ScraperAPI API key
 - `countryCode` (string, optional): Two-letter ISO country code for geotargeting
 - `tld` (string, optional): Google TLD (e.g., 'com', 'co.uk')
@@ -188,6 +189,7 @@ async searchWeb(query: string, options?: WebSearchProviderOptions): Promise<WebS
 Performs a Google SERP search and returns structured results.
 
 **Parameters:**
+
 - `query` (string): Search query
 - `options` (WebSearchProviderOptions, optional): Search options
   - `countryCode` (string, optional): Country code for geotargeting
@@ -198,6 +200,7 @@ Performs a Google SERP search and returns structured results.
   - `start` (number, optional): Pagination offset
 
 **Returns:** `WebSearchResult` containing:
+
 - `organic`: Array of organic search results
 - `knowledgeGraph`: Knowledge graph information (if available)
 - `relatedSearches`: Array of related search queries
@@ -211,10 +214,12 @@ async searchNews(query: string, options?: WebSearchProviderOptions): Promise<New
 Performs a Google News search and returns structured results.
 
 **Parameters:**
+
 - `query` (string): Search query
 - `options` (WebSearchProviderOptions, optional): Search options
 
 **Returns:** `NewsSearchResult` containing:
+
 - `news`: Array of news articles with source, title, description, date, and link
 
 ##### fetchPage
@@ -226,12 +231,14 @@ async fetchPage(url: string, opts: WebPageOptions): Promise<WebPageResult>
 Fetches HTML content from a URL using ScraperAPI and returns it in markdown format.
 
 **Parameters:**
+
 - `url` (string): URL to fetch
 - `opts` (WebPageOptions): Fetch options
   - `render` (boolean, optional): Enable JavaScript rendering
   - `countryCode` (string, optional): Country code for geotargeting
 
 **Returns:** `WebPageResult` containing:
+
 - `markdown`: Page content in markdown format
 
 #### Private Methods
@@ -245,6 +252,7 @@ private async googleSerp(query: string, opts?: GoogleSerpOptions): Promise<Googl
 Internal method to perform Google SERP searches via ScraperAPI.
 
 **Parameters:**
+
 - `query` (string): Search query
 - `opts` (GoogleSerpOptions, optional): Advanced options
   - `countryCode` (string, optional): Country code
@@ -270,6 +278,7 @@ private async googleNews(query: string, opts?: GoogleNewsOptions): Promise<Googl
 Internal method to perform Google News searches via ScraperAPI.
 
 **Parameters:**
+
 - `query` (string): Search query
 - `opts` (GoogleNewsOptions, optional): Advanced options (same as GoogleSerpOptions)
 
@@ -378,11 +387,13 @@ try {
 ```
 
 **Error Types:**
+
 - **400**: Missing required parameters (url, query, apiKey)
 - **429**: Rate limit exceeded
 - **5xx**: Server errors from ScraperAPI
 
 Errors include:
+
 - `message`: Human-readable error description
 - `status`: HTTP status code
 - `hint`: First 200 characters of error response body
@@ -493,23 +504,27 @@ The package supports the following Google search parameters through ScraperAPI:
 ### Common Issues
 
 1. **Missing API Key**:
+
    ```typescript
    if (!config?.apiKey) throw new Error("ScraperAPIWebSearchProvider requires apiKey");
    ```
 
 2. **Rate Limiting (429)**:
+
    ```typescript
    // Check your ScraperAPI plan limits
    // Consider implementing caching
    ```
 
 3. **Country Targeting**:
+
    ```typescript
    // Verify country code is supported
    // Use both countryCode and tld parameters
    ```
 
 4. **JavaScript Rendering**:
+
    ```typescript
    // JS rendering consumes more credits
    // Only enable when necessary
