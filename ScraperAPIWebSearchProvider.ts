@@ -1,4 +1,4 @@
-import {doFetchWithRetry} from "@tokenring-ai/utility/http/doFetchWithRetry";
+import { doFetchWithRetry } from "@tokenring-ai/utility/http/doFetchWithRetry";
 import type {
   KnowledgeGraph,
   NewsSearchResult,
@@ -8,55 +8,55 @@ import type {
   WebSearchProviderOptions,
   WebSearchResult,
 } from "@tokenring-ai/websearch/WebSearchProvider";
-import type {ScraperAPIWebSearchProviderOptions} from "./schema.ts";
+import type { ScraperAPIWebSearchProviderOptions } from "./schema.ts";
 
 export type GoogleSerpOptions = {
-  countryCode?: string;
-  tld?: string;
+  countryCode?: string | undefined;
+  tld?: string | undefined;
   outputFormat?: "json" | "csv";
-  uule?: string;
-  num?: number;
-  hl?: string;
-  gl?: string;
-  tbs?: string;
-  ie?: string;
-  oe?: string;
-  start?: number;
-}
+  uule?: string | undefined;
+  num?: number | undefined;
+  hl?: string | undefined;
+  gl?: string | undefined;
+  tbs?: string | undefined;
+  ie?: string | undefined;
+  oe?: string | undefined;
+  start?: number | undefined;
+};
 
 export interface GoogleNewsOptions {
-  countryCode?: string;
-  tld?: string;
+  countryCode?: string | undefined;
+  tld?: string | undefined;
   outputFormat?: "json" | "csv";
-  uule?: string;
-  num?: number;
-  hl?: string;
-  gl?: string;
-  tbs?: string;
-  ie?: string;
-  oe?: string;
-  start?: number;
+  uule?: string | undefined;
+  num?: number | undefined;
+  hl?: string | undefined;
+  gl?: string | undefined;
+  tbs?: string | undefined;
+  ie?: string | undefined;
+  oe?: string | undefined;
+  start?: number | undefined;
 }
 
 type ScraperAPIKnowledgeGraph = {
   position: number;
   title: string;
-  image?: string;
+  image?: string | undefined;
   description: string;
 };
 
 export interface GoogleSerpResponse {
   search_information: {
     query_displayed: string;
-    total_results?: number;
-    time_taken_displayed?: number;
+    total_results?: number | undefined;
+    time_taken_displayed?: number | undefined;
   };
   knowledge_graph?: ScraperAPIKnowledgeGraph;
   organic_results: Array<{
     position: number;
     title: string;
     snippet: string;
-    highlights?: string[];
+    highlights?: string[] | undefined;
     link: string;
     displayed_link: string;
   }>;
@@ -77,8 +77,8 @@ export interface GoogleSerpResponse {
   pagination: {
     pages_count: number;
     current_page: number;
-    next_page_url?: string;
-    prev_page_url?: string;
+    next_page_url?: string | undefined;
+    prev_page_url?: string | undefined;
     pages: Array<{
       page: number;
       url: string;
@@ -94,7 +94,7 @@ export interface GoogleNewsResponse {
   };
   articles: Array<{
     source: string;
-    thumbnail?: string;
+    thumbnail?: string | undefined;
     title: string;
     description: string;
     date: string;
@@ -103,8 +103,8 @@ export interface GoogleNewsResponse {
   pagination: {
     pagesCount: number;
     currentPage: number;
-    nextPageUrl?: string;
-    prevPageUrl?: string;
+    nextPageUrl?: string | undefined;
+    prevPageUrl?: string | undefined;
     pages: Array<{
       page: number;
       url: string;
@@ -113,13 +113,9 @@ export interface GoogleNewsResponse {
 }
 
 export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
-  constructor(readonly config: ScraperAPIWebSearchProviderOptions) {
-  }
+  constructor(readonly config: ScraperAPIWebSearchProviderOptions) {}
 
-  async searchWeb(
-    query: string,
-    options?: WebSearchProviderOptions,
-  ): Promise<WebSearchResult> {
+  async searchWeb(query: string, options?: WebSearchProviderOptions): Promise<WebSearchResult> {
     const results = await this.googleSerp(query, {
       countryCode: options?.countryCode,
       tld: "com",
@@ -129,30 +125,20 @@ export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
     return {
       organic: results.organic_results,
       knowledgeGraph: results.knowledge_graph
-        ? (({
+        ? (({ position, title, image, description }: ScraperAPIKnowledgeGraph) => {
+            return {
               position,
               title,
-              image,
+              imageUrl: image,
               description,
-            }: ScraperAPIKnowledgeGraph) => {
-          return {
-            position,
-            title,
-            imageUrl: image,
-            description,
-          } as KnowledgeGraph;
-        })(results.knowledge_graph)
+            } as KnowledgeGraph;
+          })(results.knowledge_graph)
         : undefined,
-      relatedSearches: results.related_questions?.map(
-        ({question, position}) => ({query: question, position}),
-      ),
+      relatedSearches: results.related_questions?.map(({ question, position }) => ({ query: question, position })),
     };
   }
 
-  async searchNews(
-    query: string,
-    options?: WebSearchProviderOptions,
-  ): Promise<NewsSearchResult> {
+  async searchNews(query: string, options?: WebSearchProviderOptions): Promise<NewsSearchResult> {
     const results = await this.googleNews(query, {
       countryCode: options?.countryCode,
       tld: "com",
@@ -164,8 +150,7 @@ export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
   }
 
   async fetchPage(url: string, opts: WebPageOptions): Promise<WebPageResult> {
-    if (!url)
-      throw Object.assign(new Error("url is required"), {status: 400});
+    if (!url) throw Object.assign(new Error("url is required"), { status: 400 });
     const params = {
       api_key: this.config.apiKey,
       url,
@@ -180,23 +165,17 @@ export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
     const res = await doFetchWithRetry(endpoint);
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      throw Object.assign(
-        new Error(`ScraperAPI HTML fetch failed (${res.status})`),
-        {
-          status: res.status,
-          hint: text.slice(0, 200),
-        },
-      );
+      throw Object.assign(new Error(`ScraperAPI HTML fetch failed (${res.status})`), {
+        status: res.status,
+        hint: text.slice(0, 200),
+      });
     }
     return {
       markdown: await res.text(),
     };
   }
 
-  private async googleSerp(
-    query: string,
-    opts: GoogleSerpOptions = {},
-  ): Promise<GoogleSerpResponse> {
+  private async googleSerp(query: string, opts: GoogleSerpOptions = {}): Promise<GoogleSerpResponse> {
     const endpoint = this.createSerpEndpointURL(query, opts);
     const res = await doFetchWithRetry(endpoint);
     if (!res.ok) {
@@ -210,10 +189,7 @@ export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
     return await res.json();
   }
 
-  private async googleNews(
-    query: string,
-    opts: GoogleNewsOptions = {},
-  ): Promise<GoogleNewsResponse> {
+  private async googleNews(query: string, opts: GoogleNewsOptions = {}): Promise<GoogleNewsResponse> {
     const endpoint = this.createNewsEndpointURL(query, opts);
     const res = await doFetchWithRetry(endpoint);
     if (!res.ok) {
@@ -236,8 +212,7 @@ export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
   }
 
   private createSerpEndpointURL(query: string, opts: GoogleSerpOptions) {
-    if (!query)
-      throw Object.assign(new Error("query is required"), {status: 400});
+    if (!query) throw Object.assign(new Error("query is required"), { status: 400 });
     const baseParams: Record<string, any> = {
       api_key: this.config.apiKey,
       query,
@@ -259,8 +234,7 @@ export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
   }
 
   private createNewsEndpointURL(query: string, opts: GoogleNewsOptions) {
-    if (!query)
-      throw Object.assign(new Error("query is required"), {status: 400});
+    if (!query) throw Object.assign(new Error("query is required"), { status: 400 });
     const baseParams: Record<string, any> = {
       api_key: this.config.apiKey,
       query,

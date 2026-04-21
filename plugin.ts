@@ -1,12 +1,12 @@
-import type {TokenRingPlugin} from "@tokenring-ai/app";
-import {WebSearchService} from "@tokenring-ai/websearch";
-import {z} from "zod";
-import packageJSON from "./package.json" with {type: "json"};
-import {ScraperAPIWebSearchProviderOptionsSchema} from "./schema.ts";
+import type { TokenRingPlugin } from "@tokenring-ai/app";
+import { WebSearchService } from "@tokenring-ai/websearch";
+import { z } from "zod";
+import packageJSON from "./package.json" with { type: "json" };
 import ScraperAPIWebSearchProvider from "./ScraperAPIWebSearchProvider.ts";
+import { ScraperAPIWebSearchProviderOptionsSchema } from "./schema.ts";
 
 const packageConfigSchema = z.object({
-  scraperapi: ScraperAPIWebSearchProviderOptionsSchema.optional(),
+  scraperapi: ScraperAPIWebSearchProviderOptionsSchema.exactOptional(),
 });
 
 export default {
@@ -21,13 +21,10 @@ export default {
       };
     }
 
-    const {scraperapi} = config;
+    const { scraperapi } = config;
     if (scraperapi) {
-      app.waitForService(WebSearchService, (webSearchService) => {
-        webSearchService.registerProvider(
-          "scraperapi",
-          new ScraperAPIWebSearchProvider(scraperapi),
-        );
+      app.waitForService(WebSearchService, webSearchService => {
+        webSearchService.registerProvider("scraperapi", new ScraperAPIWebSearchProvider(scraperapi));
       });
     }
   },
