@@ -1,10 +1,12 @@
 # @tokenring-ai/scraperapi
 
-ScraperAPI integration for Token Ring AI - A web search provider that enables structured Google SERP, Google News, and HTML fetching through ScraperAPI.
+ScraperAPI integration for Token Ring AI - A web search provider that enables structured Google SERP, Google News, and
+HTML fetching through ScraperAPI.
 
 ## Overview
 
-The `@tokenring-ai/scraperapi` package provides a ScraperAPI-based web search provider that integrates with the Token Ring AI platform. It extends the `WebSearchProvider` from `@tokenring-ai/websearch`, offering:
+The `@tokenring-ai/scraperapi` package provides a ScraperAPI-based web search provider that integrates with the Token
+Ring AI platform. It extends the `WebSearchProvider` from `@tokenring-ai/websearch`, offering:
 
 - **Google SERP Search**: Structured search results with organic listings, knowledge graphs, and related questions
 - **Google News Search**: Structured news articles with sources, thumbnails, dates, and links
@@ -48,7 +50,8 @@ bun install
 
 ### Plugin Configuration
 
-The package integrates with the Token Ring plugin system. Configure it through your application's websearch configuration:
+The package integrates with the Token Ring plugin system. Configure it through your application's websearch
+configuration:
 
 ```typescript
 import { defineConfig } from '@tokenring-ai/app';
@@ -192,12 +195,12 @@ Performs a Google SERP search and returns structured results.
 
 - `query` (string): Search query
 - `options` (WebSearchProviderOptions, optional): Search options
-  - `countryCode` (string, optional): Country code for geotargeting
-  - `gl` (string, optional): Country boost parameter
-  - `hl` (string, optional): Host language
-  - `num` (number, optional): Number of results
-  - `tbs` (string, optional): Time-based search filter
-  - `start` (number, optional): Pagination offset
+- `countryCode` (string, optional): Country code for geotargeting
+- `gl` (string, optional): Country boost parameter
+- `hl` (string, optional): Host language
+- `num` (number, optional): Number of results
+- `tbs` (string, optional): Time-based search filter
+- `start` (number, optional): Pagination offset
 
 **Returns:** `WebSearchResult` containing:
 
@@ -234,8 +237,8 @@ Fetches HTML content from a URL using ScraperAPI and returns it in markdown form
 
 - `url` (string): URL to fetch
 - `opts` (WebPageOptions): Fetch options
-  - `render` (boolean, optional): Enable JavaScript rendering
-  - `countryCode` (string, optional): Country code for geotargeting
+- `render` (boolean, optional): Enable JavaScript rendering
+- `countryCode` (string, optional): Country code for geotargeting
 
 **Returns:** `WebPageResult` containing:
 
@@ -255,17 +258,17 @@ Internal method to perform Google SERP searches via ScraperAPI.
 
 - `query` (string): Search query
 - `opts` (GoogleSerpOptions, optional): Advanced options
-  - `countryCode` (string, optional): Country code
-  - `tld` (string, optional): Google TLD
-  - `outputFormat` ('json' | 'csv', optional): Output format
-  - `uule` (string, optional): UULE parameter for location targeting
-  - `num` (number, optional): Number of results
-  - `hl` (string, optional): Host language
-  - `gl` (string, optional): Country boost
-  - `tbs` (string, optional): Time-based filter
-  - `ie` (string, optional): Input encoding
-  - `oe` (string, optional): Output encoding
-  - `start` (number, optional): Pagination offset
+- `countryCode` (string, optional): Country code
+- `tld` (string, optional): Google TLD
+- `outputFormat` ('json' | 'csv', optional): Output format
+- `uule` (string, optional): UULE parameter for location targeting
+- `num` (number, optional): Number of results
+- `hl` (string, optional): Host language
+- `gl` (string, optional): Country boost
+- `tbs` (string, optional): Time-based filter
+- `ie` (string, optional): Input encoding
+- `oe` (string, optional): Output encoding
+- `start` (number, optional): Pagination offset
 
 **Returns:** `GoogleSerpResponse` with structured SERP data
 
@@ -286,7 +289,8 @@ Internal method to perform Google News searches via ScraperAPI.
 
 ### Response Types
 
-The package returns structured data that conforms to the Token Ring websearch API. The underlying ScraperAPI responses are mapped to these standardized types:
+The package returns structured data that conforms to the Token Ring websearch API. The underlying ScraperAPI responses
+are mapped to these standardized types:
 
 #### Google SERP Response Structure
 
@@ -477,19 +481,19 @@ pkg/scraperapi/
 
 The package supports the following Google search parameters through ScraperAPI:
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `country_code` | Two-letter ISO country code for geotargeting | `us`, `gb`, `ca` |
-| `tld` | Google domain TLD | `com`, `co.uk`, `ca` |
-| `output_format` | Response format | `json`, `csv` |
-| `uule` | Location targeting (UULE parameter) | `w+CAIQICINUGFyaXMsIEZyYW5jZQ` |
-| `num` | Number of results | `10`, `20` |
-| `hl` | Host language | `en`, `de` |
-| `gl` | Country boost | `us`, `de` |
-| `tbs` | Time-based filter | `d` (day), `w` (week), `m` (month), `y` (year) |
-| `ie` | Input encoding | `UTF8` |
-| `oe` | Output encoding | `UTF8` |
-| `start` | Pagination offset | `0`, `10`, `20` |
+| Parameter       | Description                                  | Example                                        |
+|-----------------|----------------------------------------------|------------------------------------------------|
+| `country_code`  | Two-letter ISO country code for geotargeting | `us`, `gb`, `ca`                               |
+| `tld`           | Google domain TLD                            | `com`, `co.uk`, `ca`                           |
+| `output_format` | Response format                              | `json`, `csv`                                  |
+| `uule`          | Location targeting (UULE parameter)          | `w+CAIQICINUGFyaXMsIEZyYW5jZQ`                 |
+| `num`           | Number of results                            | `10`, `20`                                     |
+| `hl`            | Host language                                | `en`, `de`                                     |
+| `gl`            | Country boost                                | `us`, `de`                                     |
+| `tbs`           | Time-based filter                            | `d` (day), `w` (week), `m` (month), `y` (year) |
+| `ie`            | Input encoding                               | `UTF8`                                         |
+| `oe`            | Output encoding                              | `UTF8`                                         |
+| `start`         | Pagination offset                            | `0`, `10`, `20`                                |
 
 ## Ethical Considerations
 
