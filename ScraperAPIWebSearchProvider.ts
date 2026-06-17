@@ -1,4 +1,4 @@
-import { doFetchWithRetry } from "@tokenring-ai/utility/http/doFetchWithRetry";
+import { HTTPRetriever } from "@tokenring-ai/utility/http/HTTPRetriever";
 import type {
   KnowledgeGraph,
   NewsSearchResult,
@@ -8,6 +8,7 @@ import type {
   WebSearchProviderOptions,
   WebSearchResult,
 } from "@tokenring-ai/websearch/WebSearchProvider";
+import { z } from "zod";
 import type { ScraperAPIWebSearchProviderOptions } from "./schema.ts";
 
 export type GoogleSerpOptions = {
@@ -38,82 +39,138 @@ export interface GoogleNewsOptions {
   start?: number | undefined;
 }
 
-type ScraperAPIKnowledgeGraph = {
-  position: number;
-  title: string;
-  image?: string | undefined;
-  description: string;
-};
+const ScraperAPIKnowledgeGraphSchema = z
+  .object({
+    position: z.number(),
+    title: z.string(),
+    image: z.string().optional(),
+    description: z.string(),
+  })
+  .loose();
 
-export interface GoogleSerpResponse {
-  search_information: {
-    query_displayed: string;
-    total_results?: number | undefined;
-    time_taken_displayed?: number | undefined;
-  };
-  knowledge_graph?: ScraperAPIKnowledgeGraph;
-  organic_results: Array<{
-    position: number;
-    title: string;
-    snippet: string;
-    highlights?: string[] | undefined;
-    link: string;
-    displayed_link: string;
-  }>;
-  related_questions?: Array<{
-    question: string;
-    position: number;
-  }>;
-  videos?: Array<{
-    position: number;
-    link: string;
-    title: string;
-    source: string;
-    channel: string;
-    publish_date: string;
-    thumbnail: string;
-    duration: string;
-  }>;
-  pagination: {
-    pages_count: number;
-    current_page: number;
-    next_page_url?: string | undefined;
-    prev_page_url?: string | undefined;
-    pages: Array<{
-      page: number;
-      url: string;
-    }>;
-  };
-}
+type ScraperAPIKnowledgeGraph = z.output<typeof ScraperAPIKnowledgeGraphSchema>;
 
-export interface GoogleNewsResponse {
-  search_information: {
-    query_displayed: string;
-    total_results: number;
-    time_taken_displayed: number;
-  };
-  articles: Array<{
-    source: string;
-    thumbnail?: string | undefined;
-    title: string;
-    description: string;
-    date: string;
-    link: string;
-  }>;
-  pagination: {
-    pagesCount: number;
-    currentPage: number;
-    nextPageUrl?: string | undefined;
-    prevPageUrl?: string | undefined;
-    pages: Array<{
-      page: number;
-      url: string;
-    }>;
-  };
-}
+const GoogleSerpResponseSchema = z
+  .object({
+    search_information: z
+      .object({
+        query_displayed: z.string(),
+        total_results: z.number().optional(),
+        time_taken_displayed: z.number().optional(),
+      })
+      .loose(),
+    knowledge_graph: ScraperAPIKnowledgeGraphSchema.optional(),
+    organic_results: z.array(
+      z
+        .object({
+          position: z.number(),
+          title: z.string(),
+          snippet: z.string(),
+          highlights: z.array(z.string()).optional(),
+          link: z.string(),
+          displayed_link: z.string(),
+        })
+        .loose(),
+    ),
+    related_questions: z
+      .array(
+        z
+          .object({
+            question: z.string(),
+            position: z.number(),
+          })
+          .loose(),
+      )
+      .optional(),
+    videos: z
+      .array(
+        z
+          .object({
+            position: z.number(),
+            link: z.string(),
+            title: z.string(),
+            source: z.string(),
+            channel: z.string(),
+            publish_date: z.string(),
+            thumbnail: z.string(),
+            duration: z.string(),
+          })
+          .loose(),
+      )
+      .optional(),
+    pagination: z
+      .object({
+        pages_count: z.number(),
+        current_page: z.number(),
+        next_page_url: z.string().optional(),
+        prev_page_url: z.string().optional(),
+        pages: z.array(
+          z
+            .object({
+              page: z.number(),
+              url: z.string(),
+            })
+            .loose(),
+        ),
+      })
+      .loose(),
+  })
+  .loose();
+
+export type GoogleSerpResponse = z.output<typeof GoogleSerpResponseSchema>;
+
+const GoogleNewsResponseSchema = z
+  .object({
+    search_information: z
+      .object({
+        query_displayed: z.string(),
+        total_results: z.number(),
+        time_taken_displayed: z.number(),
+      })
+      .loose(),
+    articles: z.array(
+      z
+        .object({
+          source: z.string(),
+          thumbnail: z.string().optional(),
+          title: z.string(),
+          description: z.string(),
+          date: z.string(),
+          link: z.string(),
+        })
+        .loose(),
+    ),
+    pagination: z
+      .object({
+        pagesCount: z.number(),
+        currentPage: z.number(),
+        nextPageUrl: z.string().optional(),
+        prevPageUrl: z.string().optional(),
+        pages: z.array(
+          z
+            .object({
+              page: z.number(),
+              url: z.string(),
+            })
+            .loose(),
+        ),
+      })
+      .loose(),
+  })
+  .loose();
+
+export type GoogleNewsResponse = z.output<typeof GoogleNewsResponseSchema>;
 
 export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
-  constructor(readonly config: ScraperAPIWebSearchProviderOptions) {}
+  private readonly retriever: HTTPRetriever;
+
+  constructor(readonly config: ScraperAPIWebSearchProviderOptions) {
+    this.retriever = new HTTPRetriever({
+      baseUrl: "https://api.scraperapi.com",
+      headers: {},
+      timeout: 10_000,
+    });
+  }
 
   async searchWeb(query: string, options?: WebSearchProviderOptions): Promise<WebSearchResult> {
     const results = await this.googleSerp(query, {
@@ -162,44 +219,34 @@ export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
 
     const qs = this.buildQuery(params);
     const endpoint = `https://api.scraperapi.com/?${qs}`;
-    const res = await doFetchWithRetry(endpoint);
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw Object.assign(new Error(`ScraperAPI HTML fetch failed (${res.status})`), {
-        status: res.status,
-        hint: text.slice(0, 200),
-      });
-    }
+    const markdown = await this.retriever.fetchText({
+      url: endpoint,
+      context: "ScraperAPI HTML fetch",
+      opts: { method: "GET" },
+    });
     return {
-      markdown: await res.text(),
+      markdown,
     };
   }
 
   private async googleSerp(query: string, opts: GoogleSerpOptions = {}): Promise<GoogleSerpResponse> {
     const endpoint = this.createSerpEndpointURL(query, opts);
-    const res = await doFetchWithRetry(endpoint);
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw Object.assign(new Error(`ScraperAPI SERP failed (${res.status})`), {
-        status: res.status,
-        hint: text?.slice(0, 200),
-      });
-    }
-
-    return await res.json();
+    return this.retriever.fetchValidatedJson({
+      url: endpoint,
+      context: "ScraperAPI SERP",
+      opts: { method: "GET" },
+      schema: GoogleSerpResponseSchema,
+    });
   }
 
   private async googleNews(query: string, opts: GoogleNewsOptions = {}): Promise<GoogleNewsResponse> {
     const endpoint = this.createNewsEndpointURL(query, opts);
-    const res = await doFetchWithRetry(endpoint);
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw Object.assign(new Error(`ScraperAPI News failed (${res.status})`), {
-        status: res.status,
-        hint: text?.slice(0, 200),
-      });
-    }
-    return await res.json();
+    return this.retriever.fetchValidatedJson({
+      url: endpoint,
+      context: "ScraperAPI News",
+      opts: { method: "GET" },
+      schema: GoogleNewsResponseSchema,
+    });
   }
 
   private buildQuery(params: Record<string, any>): string {
