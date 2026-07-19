@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const ScraperAPIWebSearchProviderOptionsSchema = z.object({
-  apiKey: z.string(),
+  apiKey: z.string().meta({ sensitive: true, description: "ScraperAPI key" }),
   countryCode: z.string().exactOptional(),
   tld: z.string().exactOptional(),
   render: z.boolean().exactOptional(),
