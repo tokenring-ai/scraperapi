@@ -462,7 +462,6 @@ pkg/scraperapi/
 ├── plugin.ts                          # Token Ring plugin integration
 ├── package.json                       # Package metadata and dependencies
 ├── README.md                          # This documentation
-├── vitest.config.ts                   # Vitest configuration
 └── design/                            # Design documentation
     ├── implementation.md              # Implementation design
     ├── endpoint_docs.md               # ScraperAPI endpoint documentation
