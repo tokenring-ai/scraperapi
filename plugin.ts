@@ -1,4 +1,5 @@
 import type { TokenRingPlugin } from "@tokenring-ai/app";
+import { resolveSecret } from "@tokenring-ai/secrets";
 import { WebSearchService } from "@tokenring-ai/websearch";
 import { z } from "zod";
 import packageJSON from "./package.json" with { type: "json" };
@@ -6,7 +7,7 @@ import ScraperAPIWebSearchProvider from "./ScraperAPIWebSearchProvider.ts";
 import { ScraperAPIWebSearchProviderOptionsSchema } from "./schema.ts";
 
 const packageConfigSchema = z.object({
-  scraperapi: ScraperAPIWebSearchProviderOptionsSchema.exactOptional(),
+  scraperapi: ScraperAPIWebSearchProviderOptionsSchema.prefault({}),
 });
 
 export default {
@@ -15,18 +16,14 @@ export default {
   version: packageJSON.version,
   description: packageJSON.description,
   install(app, config) {
-    if (process.env.SCRAPERAPI_API_KEY) {
-      config.scraperapi ??= {
-        apiKey: process.env.SCRAPERAPI_API_KEY,
-      };
-    }
-
     const { scraperapi } = config;
-    if (scraperapi) {
-      app.waitForService(WebSearchService, webSearchService => {
-        webSearchService.registerProvider("scraperapi", new ScraperAPIWebSearchProvider(scraperapi));
-      });
-    }
+
+    const apiKey = resolveSecret(app, scraperapi.apiKey);
+    if (!apiKey) return;
+
+    app.waitForService(WebSearchService, webSearchService => {
+      webSearchService.registerProvider("scraperapi", new ScraperAPIWebSearchProvider({ ...scraperapi, apiKey }));
+    });
   },
   configSchema: packageConfigSchema,
 } satisfies TokenRingPlugin<typeof packageConfigSchema>;

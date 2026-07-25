@@ -9,7 +9,7 @@ import type {
   WebSearchResult,
 } from "@tokenring-ai/websearch/WebSearchProvider";
 import { z } from "zod";
-import type { ScraperAPIWebSearchProviderOptions } from "./schema.ts";
+import type { ResolvedScraperAPIWebSearchProviderOptions } from "./schema.ts";
 
 export type GoogleSerpOptions = {
   countryCode?: string | undefined;
@@ -164,7 +164,7 @@ export type GoogleNewsResponse = z.output<typeof GoogleNewsResponseSchema>;
 export default class ScraperAPIWebSearchProvider implements WebSearchProvider {
   private readonly retriever: HTTPRetriever;
 
-  constructor(readonly config: ScraperAPIWebSearchProviderOptions) {
+  constructor(readonly config: ResolvedScraperAPIWebSearchProviderOptions) {
     this.retriever = new HTTPRetriever({
       baseUrl: "https://api.scraperapi.com",
       headers: {},
